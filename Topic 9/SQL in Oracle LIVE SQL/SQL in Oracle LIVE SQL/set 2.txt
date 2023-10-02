@@ -1,0 +1,223 @@
+1) An interesting query to increment the salary based on the kind of job the employees are 
+into 
+
+SELECT last_name, job_id, salary,
+       CASE job_id WHEN 'IT_PROG'  THEN  1.10*salary
+                   WHEN 'ST_CLERK' THEN  1.15*salary
+                   WHEN 'SA_REP'   THEN  1.20*salary
+        ELSE       salary END AS "REVISED_SALARY"
+	FROM   hr.employees;
+
+
+2)  
+Modify the above code in such a way that salary hike will be provided based on the current 
+pay bracket 
+
+< 5000, then 20% hike 
+
+5000 to 10000 , then 12% hike 
+
+> 10000 then 6% hike 
+
+
+SELECT last_name, job_id, salary,
+       CASE 
+                   WHEN salary < 5000  THEN  1.2*salary
+                   WHEN salary > 5000 and  salary < 10000 THEN  1.12*salary
+                   WHEN salary > 10000   THEN  1.06 *salary
+        ELSE       salary END AS "REVISED_SALARY"
+	FROM   hr.employees;
+
+
+
+3) Do in class 
+
+Modify the above code to now deduct the tax based on the pay scale as per the below scale 
+
+Salary > 10000 , 30% tax 
+5000-10000 20% tax 
+under 5000, 10% tax 
+
+The output must have the following columns 
+
+first_name, phone number, job_id, current salary (including comission), salary after tax
+
+
+----------------------------------------------------------------------------
+Understanding joins using 2 simple tables (customer table and sales table) 
+
+CREATE TABLE customers
+( customer_id number(10) NOT NULL PRIMARY KEY,
+  customer_name varchar2(50) NOT NULL
+);
+
+insert into customers(customer_id,customer_name) values(1,'Ram'); 
+insert into customers(customer_id,customer_name) values(2,'Bob'); 
+insert into customers(customer_id,customer_name) values(3,'Alice'); 
+insert into customers(customer_id,customer_name) values(4,'Sham'); 
+insert into customers(customer_id,customer_name) values(5,'Tim'); 
+insert into customers(customer_id,customer_name) values(6,'Tom'); 
+insert into customers(customer_id,customer_name) values(7,'Krish'); 
+
+
+CREATE TABLE sales
+( customer_id number(10) NOT NULL,
+  sales_id varchar(20) NOT NULL,
+  sale_amount float(4) NOT NULL,
+  constraint sales_pk PRIMARY KEY(customer_id, sales_id) 
+);
+
+insert into sales(customer_id,sales_id,sale_amount) values(1,'1xbyc',1000); 
+insert into sales(customer_id,sales_id,sale_amount) values(1,'3240yc',2000); 
+insert into sales(customer_id,sales_id,sale_amount) values(1,'sdf09xbyc',9086); 
+insert into sales(customer_id,sales_id,sale_amount) values(2,'1xbasyc',187); 
+insert into sales(customer_id,sales_id,sale_amount) values(2,'20394ll',1045.78); 
+insert into sales(customer_id,sales_id,sale_amount) values(3,'9asd',10000); 
+insert into sales(customer_id,sales_id,sale_amount) values(3,'345kk',1500); 
+insert into sales(customer_id,sales_id,sale_amount) values(1,'39045kkj',8000); 
+insert into sales(customer_id,sales_id,sale_amount) values(4,'asdkj88',5000); 
+insert into sales(customer_id,sales_id,sale_amount) values(5,'90234k',1000); 
+insert into sales(customer_id,sales_id,sale_amount) values(6,'234lkl',1040); 
+insert into sales(customer_id,sales_id,sale_amount) values(3,'kj29834',7000); 
+insert into sales(customer_id,sales_id,sale_amount) values(2,'aks88',9000); 
+insert into sales(customer_id,sales_id,sale_amount) values(1,'98asd',11000); 
+insert into sales(customer_id,sales_id,sale_amount) values(111,'98asdd',11000); 
+insert into sales(customer_id,sales_id,sale_amount) values(777,'110asd',12000); 
+insert into sales(customer_id,sales_id,sale_amount) values(888,'111asd',13000); 
+
+
+
+
+q)Lets try the most commonly used kind of join (the inner join) 
+
+SELECT c.customer_id, c.customer_name, s.sale_amount  
+FROM customers c INNER JOIN sales s
+ON c.customer_id = s.customer_id  ;
+
+Note : Only the matching customer_id from left table & right table will be selected in the 
+final output. Those customer_id's not found in right table for a corresponding entry in 
+left table will not be displayed in the output ! 
+
+
+q) Lets try the left join (also known as the left outer join in oracle) 
+
+SELECT c.customer_id, c.customer_name, s.sale_amount  
+FROM customers c LEFT JOIN sales s
+ON c.customer_id = s.customer_id  ;
+
+Business query : I want to know all the customers who have registered, made a purchase and 
+also those who have not made any purchase ! 
+
+
+
+
+q) Lets try the right join (is the same as the right outer join)
+
+SELECT c.customer_id, c.customer_name, s.sale_amount  
+FROM customers c RIGHT JOIN sales s
+ON c.customer_id = s.customer_id  ;
+
+
+q) Lets try the full join (same as full outer join) 
+
+SELECT c.customer_id, c.customer_name, s.sale_amount  
+FROM customers c FULL JOIN sales s
+ON c.customer_id = s.customer_id  ;
+
+----------------------------------------------------------------------------
+
+4) Understanding joins ..lets display the contents of the departments table 
+
+select * from hr.departments ;
+
+Now I want to know which employee works in which department by a default join operation 
+(inner join) The below is the brief overview of different kinds of joins 
+
+INNER JOIN: 
+Returns rows that match on common key values, compared from both tables
+
+LEFT JOIN: 
+Returns matched rows from both tables 
+And Unmatched rows from the left table
+
+RIGHT JOIN: 
+Returns matched rows from both tables 
+And Unmatched rows from the Right table
+
+
+SELECT employee_id, first_name, last_name, department_name, salary 
+FROM  hr.departments d INNER JOIN hr.employees e
+ON d.department_id = e.department_id order by  salary desc ;
+
+
+Now lets quickly see what different kinds of joins can look like
+
+SELECT employee_id, first_name, last_name, department_name, salary 
+FROM  hr.departments d LEFT OUTER JOIN hr.employees e
+ON d.department_id = e.department_id order by  salary desc ;
+
+SELECT employee_id, first_name, last_name, department_name, salary 
+FROM  hr.departments d RIGHT OUTER JOIN hr.employees e
+ON d.department_id = e.department_id order by  salary desc ;
+
+
+SELECT employee_id, first_name, last_name, department_name, salary 
+FROM  hr.departments d FULL OUTER JOIN hr.employees e
+ON d.department_id = e.department_id order by  salary desc ;
+
+
+5) Now looking at the schema (jpeg image shared) I want to join 3 tables to find out 
+which city is an employee working in 
+
+SELECT employee_id, first_name, last_name, department_name, salary, city, country_id 
+FROM  hr.departments d INNER JOIN hr.employees e
+ON d.department_id = e.department_id  INNER JOIN hr.locations l
+ON d.location_id = l.location_id order by  salary desc ;
+
+
+6) Do in the class
+Write a query to display the following columns and sort the result by descending 
+order of salary.
+
+employee_id, first_name, last_name , department name, salary, city, country name
+
+
+7)Do in the class 
+
+Your manager wants a report based on which country employees have been most loyal employees
+You just need to popoulate all the details in a table in an appropriate manner. 
+
+8) Do in class
+
+Write a query to find out the firtname, last name, department name, job_id , salary of all 
+the employees who either work in london
+
+
+9)Do in Class 
+
+Write a query to fetch the department id, department name, manager id and manager's first name
+
+
+10) Do in class 
+
+Using the result of the above query, write a query to populate the following data 
+
+Employee id, first name, last name, department name, his manager's name. 
+
+
+11) Do in class 
+
+Write a query to display job title, employee name, and the difference between salary of 
+the employee and minimum salary for the job
+
+12) Do in class 
+
+Using the result of the previous query. If the difference between the current salary and max 
+salary is greater than 30% of the current salary , then make a market correction by giving a 
+raise of 30 % from the current salary and populate the following columns 
+
+employee_id, first name, last name, department_name, years of experince, current salary, 
+max salary, difference in salary, incremented salary if applicable or same salary
+
+HINT: Might have to use case statement here ! 
+Note: Feel free to use views to reduce the complexity of queries ! 

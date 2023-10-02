@@ -1,0 +1,83 @@
+ Union operation on tables
+---------------------------
+
+select department_id from hr.employees 
+
+union all 
+
+select department_id from hr.departments 
+
+# Example of a simple UNION use case 
+Consider a database maintained by a school. Suppose each section of the class 
+has a seperate table. There are 3 sections in every grade, during the announcement 
+of exam results, a consolidated view of all the student for each grade is needed. 
+
+In such a scenario, we might want to perfrom a union operaion on all the tables 
+belonging to each section. 
+#Note : Here we are assuming that all the tables representing each section have the 
+same number of columns and and types. 
+
+
+
+Subqueries / Nested Queries
+-----------------------------
+
+#Example of subquery on a single table 
+
+
+SELECT first_name, salary, department_id
+FROM hr.employees
+WHERE salary = (SELECT MIN (salary) 
+		FROM hr.employees); 
+
+
+
+# The same query can be executed in a different way. 
+Sort the employee table based on the salary column. 
+Display on the first row to get the minimum row. 
+
+q) How is sorting of the table going to affect the perfomance 
+
+
+# Another example of nested query
+
+SELECT department_id, MIN (salary)
+FROM hr.employees
+GROUP BY department_id
+HAVING MIN (salary)  < (SELECT AVG (salary)
+			FROM hr.employees)
+
+
+
+
+
+
+
+
+# Example of Subqueries using 2 different tables and multiple rows 
+
+SELECT DISTINCT customer_id FROM oe.orders WHERE order_total > 5000;
+
+SELECT * FROM oe.customers
+WHERE customer_id IN (107,198,158,105);
+
+
+SELECT * FROM oe.customers
+WHERE customer_id IN (SELECT DISTINCT customer_id FROM oe.orders 
+                      WHERE order_total > 5000);
+
+Note : The same query can be done using joins (which is time consuming) 
+However, the above approach does not involve joins. This is an optimized way of 
+writing queries
+
+
+# Example of Subqueries using 2 different tables and multiple rows from the 
+HR schema (departments, locations) We are trying to avoid joins using 
+subqueries. The same can be achieved using map only joins as well. 
+
+
+select * from departments 
+where location_id in (select location_id from locations 
+                      where city == "Seattle") ;
+
+

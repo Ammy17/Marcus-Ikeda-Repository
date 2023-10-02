@@ -1,0 +1,745 @@
+********************************SESSION 1 ***************************************
+
+
+Create table and insert data 
+-----------------------------
+CREATE TABLE customers
+( customer_id number(10) NOT NULL PRIMARY KEY,
+  customer_name varchar2(50) NOT NULL,
+  city varchar2(50) NOT NULL
+);
+
+insert into customers(customer_id,customer_name,city) values(1,'Alice','Austin'); 
+insert into customers(customer_id,customer_name,city) values(2,'Bob','San Jose'); 
+insert into customers(customer_id,customer_name,city) values(3,'Cathy','NYC'); 
+
+select * from customers ;
+
+
+
+--------------------------one col is null-------------------------
+CREATE TABLE customers
+( customer_id number(10) NOT NULL PRIMARY KEY,
+  customer_name varchar2(50) NOT NULL,
+  city varchar2(50) NULL
+);
+
+insert into customers(customer_id,customer_name,city) values(3,'Cathy',NULL)
+
+
+
+select * from customers ;
+
+
+
+
+Alter table  
+-----------
+The Oracle ALTER TABLE statement is used to add, modify, or drop/delete columns in a table. 
+The Oracle ALTER TABLE statement is also used to rename a table.
+
+
+ALTER TABLE customers
+  ADD country varchar2(50);
+
+
+#Lets drop the country column from the customers table 
+ALTER TABLE customers
+  DROP COLUMN country;
+
+
+# Adding a column with default values 
+
+ALTER TABLE customers
+  ADD country varchar2(50) DEFAULT 'USA' NOT NULL ;
+
+
+# Adding multiple colunms in a table 
+
+ALTER TABLE customers
+  ADD  (zipcode varchar2(10),
+       dept_id number(3) DEFAULT 100 NOT NULL);
+
+# modifying the column in a table (Since I have specified zip code to varchar2(10) I want to change it to number(7)
+
+ALTER TABLE customers
+  MODIFY zipcode number(7);
+
+
+
+Upading the table contents 
+----------------------------
+# Let's add the zip code details to the above table 
+
+UPDATE customers
+SET zipcode = 12345
+WHERE customer_id = 1;
+
+
+# Lets's add another column 'manager_id'
+
+ALTER TABLE customers
+  ADD manager_id number(3) ;
+
+# Populating all the rows of the manager_id column at once 
+
+UPDATE customers
+SET manager_id = 111
+WHERE dept_id = 100;
+
+
+Renaming a column/s 
+------------------------------------------
+ ALTER TABLE customers
+  RENAME COLUMN zipcode TO postal_zipcode;
+
+
+
+Rename the table 
+------------------------------------------
+ALTER TABLE customers
+  RENAME TO cust;
+
+
+
+Deleting the table 
+-------------------
+drop table customers ;
+ 
+
+
+
+
+Querying the existing data in the HR database (HR Schema) 
+--------------------------------------------------------
+ALTER SESSION SET current_schema = HR;
+
+1) Selecting all the rows from the employee table 
+
+select * from hr.employees; 
+
+
+2) Selecting only the salary column from the employee table 
+
+select salary from hr.employees; 
+
+
+3) Selecting the employee name and the salary 
+
+select first_name, salary from hr.employees ;
+
+
+4) DO it in the class 
+Select the first name, email and the salary details from the employee table 
+
+***
+select first_name, email, salary from hr.employees
+***
+
+5) Selecting the first name and salary of the employees if salary is greater than 6000
+
+select first_name,salary from hr.employees where salary > 6000 ;
+
+
+6)Now you are willing to sell the data to a marketing company about the details of the 
+employees in your organization, about those employees whose salary is greater than 7000. 
+What fields would like like to display safely ? 
+Note : What is displayed as the output is what would be sold to 3rd party companies. 
+
+*** FIRST NAME AND EMAIL ***
+select first_name, email from hr.employees where salary > 6000;
+
+
+7)The salary field is monthly compensation, how would you obtain the firstname and annual 
+compensation of each employee
+
+select first_name, salary*12 from hr.employees ;
+
+Note : we can rename the new column to a more meaningful column name 
+
+select first_name, salary*12 as annual_ctc from hr.employees ;
+
+8)Now lets give a hike to every employee. We display both the original annual ctc and incremented 
+annual ctc (max 30% hike) 
+
+select first_name, last_name, salary*12 as annual_ctc, (salary+(salary*0.3))*12 as salary_inc from 
+hr.employees;
+
+
+9)Do this in class
+There is a column by name comission. Now select the firstaname and the annual CTC including comission.
+The final output must have 3 columns (first name, annual ctc without comissions and annual 
+ctc with comission calculated with the comission percentage) 
+***
+select first_name, last_name, salary*12 as annual_ctc, (salary+(salary*commission_pct))*12 as salary_inc from 
+hr.employees;
+
+null value multiplied is null value
+***
+
+
+10) Using the concat operator to append 2 column values in the result 
+
+select concat(first_name, last_name) as fullname from hr.employees ;
+
+11) What if we want a space between the first and last name after concatenating ?
+
+SELECT CONCAT(CONCAT(first_name, ' '),last_name) as full_name from hr.employees ; 
+
+Note : CAPS / upper case is optional for the above command 
+
+
+12) Displaying only the rows which have a comission percentage
+
+select * from hr.employees where commission_pct is not NULL ; 
+
+13) IN CLASS EXERCISE 
+
+The HR of the company has decided to hire a third party agency to do a back ground check on 
+all those employees who are not getting any commision. The 3rd party company needs the following 
+details. First name, last name, email id , phone numeber and the employee id. Write a query which 
+would display the above details only. 
+
+***
+select first_name, last_name, email, phone_number, employee_id from hr.employees where commission_pct is NULL
+***
+
+14)How to find out how many distinct departments are there from the employee table 
+
+select distinct department_id from hr.employees ;
+
+15)IN CLASS EXERCISE 
+
+Check if the above output contains any NULL values in the output. Modify the query to igore 
+the NULL 
+
+***
+select distinct department_id from hr.employees where department_id is not NULL;
+***
+
+16) How to count the number of rows in the employee table ?
+
+select count(*) as no_of_rows from hr.employees ; 
+
+17)How to count how many distinct departments are there in the employee table 
+
+select count(distinct department_id) as no_dept from hr.employees ;
+
+
+18) Modify the above query in such a way that NULL must be ignored in the department column 
+count 
+***
+select count(distinct department_id) as no_dept from hr.employees where department_id is not null ;
+***
+19) INCLASS EXERCISE
+
+What can u infer from the output of query of question 17 and 18 (how does count work) ?
+
+* count ignores nulls? *
+
+20) IN CLASS EXERCISE
+
+Find out the count of all the employees who salary is greater than 6000 
+
+***
+select count(*) as no_of_rows from hr.employees where salary > 6000
+***
+
+21) IN CLASS EXERCISE
+
+Find out the count of all the employees whose salary is beteween 6000 and 7000
+Hint : salary > 6000 and salary < 7000 is the syntax to be used in the where clause 
+***
+select count(*) as no_of_rows from hr.employees where salary > 6000 and salary < 7000 
+***
+
+22) Displaying the results in a sorted order
+
+select * from hr.employees order by salary ; 
+
+23) Sorting in descending order 
+
+select * from hr.employees order by salary desc; 
+
+24) Limiting the result of a select query to a certain number of rows 
+
+select * from hr.employees fetch next 10 rows only;
+
+25) IN CLASS EXERCISE  
+
+Fetch only the following details of top 3 earners in the table 
+first name, email and job id 
+***
+select first_name, email, job_id from hr.employees order by salary desc fetch next 3 rows only
+***
+
+26)Lets try to find out how many people are there in each kind of jobs (if u notice the 
+job_id column, there are different kind of designations) 
+
+select job_id, count(job_id) as total_count from hr.employees group by job_id; 
+
+28) Someone from an auditing firm needs to know the total number of distict job types in 
+this organization. How would u write a query for this ?
+
+select count(distinct job_id) from hr.employees ; 
+
+29) How to fetch only the rows where job_id has the word clerk ?
+
+select * from hr.employees where job_id like '%CLERK%' ; 
+
+
+30) IN CLASS EXERCISE 
+
+Modify the above query to find out how many clerks are there in the office 
+***
+select count(*) from hr.employees where job_id like '%CLERK%' ;
+***
+
+31) Do this in the class 
+
+Find out how many people are there in the non clerk positions 
+***
+select count(*) from hr.employees where job_id not like '%CLERK%' ; 
+***
+
+
+32) An auditing firm wants to know the average salary of all the employees 
+
+select avg(salary) from hr.employees ; 
+
+33) IN CLASS EXERCISE 
+
+Modify the above query to find out the average salary including the commission 
+***
+select avg(salary + salary * commission_pct) from hr.employees ; 
+***
+
+34) IN CLASS EXERCISE 
+
+Find out the average salary of only the clerical grade employees (do not consider the commisions) 
+***
+select avg(salary) from hr.employees where job_id like '%CLERK%' ; 
+***
+
+35) IN CLASS EXERCISE 
+
+You manager wants to know many kinds of clerical jobs are there in the company ?
+
+select job_id , count(job_id) from hr.employees  where job_id like '%CLERK%' group by job_id; 
+
+
+36) IN CLASS EXERCISE 
+
+In the above query, I want to find out even the average salary of each clerk type.
+***
+select job_id , avg(salary) from hr.employees  where job_id like '%CLERK%' group by job_id; 
+***
+
+37) Creating a view ( a pseudo table ) which can be queried just like a normal table 
+
+create view non_clerk as select * from hr.employees where job_id not like '%CLERK%' ;
+
+
+38) IN CLASS EXERCISE 
+
+Find out how many rows are there in the non_clerk table 
+***
+select count(*) as no_of_rows from non_clerk
+***
+
+39) IN CLASS EXERCISE
+
+Your manager wants to know how many kinds of non clerical jobs are there in the company 
+and what is the employee count of each job category along with thier average salary 
+***
+select count(distinct job_id) from non_clerk ; 
+select job_id, count(job_id) as total_count from non_clerk group by job_id; 
+select job_id, avg(salary) from non_clerk group by job_id; 
+
+40) IN CLASS EXERCISE 
+
+Modify the above query so that the result is sorted by the average salary column 
+select job_id, avg(salary) from non_clerk group by job_id order by avg(salary)
+
+
+41)Select only those rows where the job id is either IT person or a fianance person 
+
+select * from hr.employees where job_id like '%IT%' or job_id like '%FI%' ;
+
+
+
+42) Select only those IT employees whose saalry is greater than 5000
+
+select * from hr.employees where job_id like '%IT%' and salary > 5000;
+
+
+
+43) Selecting only rows satifying both conditions using the and operator 
+
+select * from hr.employees where salary > 6000 and job_id = 'FI_ACCOUNT'; 
+
+
+44)Using and and or together in a single query 
+
+        SELECT last_name, department_id, salary
+	FROM   hr.employees
+	WHERE  salary > 10000
+	AND (department_id = 80
+	OR department_id = 90);
+
+
+45) Using the between operator 
+
+        SELECT last_name, salary
+	FROM   hr.employees
+	WHERE  salary BETWEEN  10000 AND 25000 ;
+
+
+46) Understanding the current_date funtion in oracle. current_date-hire_date in the below query gives the total number of days elapsed in a new column  
+
+select first_name, last_name, hire_date, (current_date-hire_date) / 365 as experience_today from hr.employees where employee_id = 100;
+
+
+****Additional exercises to be completed in class ********
+
+47) IN CLASS EXERCISE 
+
+List all IT related departments where there are no managers
+***
+select * from hr.departments where department_name like '%IT%' and manager_id is null;
+***
+
+48) IN CLASS EXERCISE 
+
+For how many years did employee 101 work as Account Manager
+***
+select (current_date-hire_date) / 365 as experience_today from hr.employees where employee_id = 101;
+***
+
+49) IN CLASS EXERCISE 
+
+Write a query to display the salary of all the employees with income tax deduction of flat 10% tax. The following data needs to be present in the output 
+emplyoyee id, first name, email id, original annual ctc with bonus, salary after 10% tax deduction 
+***
+select employee_id, first_name, email, (salary*12) as nontax_salary, salary*12*0.9 as taxed_salary from hr.employees
+***
+select employee_id, last_name, email, salary, commission_pct,
+    CASE WHEN commission_pct is null THEN salary*12*0.9
+		ELSE	salary*12*0.9 + salary*commission_pct*12 END AS "Taxed_Annual_Salary"
+	FROM   hr.employees;
+***
+
+50) IN CLASS EXERCISE  
+
+Write a query to display the count of employees who belong to management cadre (including president and VP) and those who do not belong to this category
+***
+select count(*) from hr.employees where job_id like '%MAN%' or job_id like '%vp%'
+(its something like this)
+***
+
+**************************************SESSION2*************************************
+1) An interesting query to increment the salary based on the kind of job the employees are 
+into 
+
+SELECT last_name, job_id, salary,
+       CASE job_id WHEN 'IT_PROG'  THEN  1.10*salary
+                   WHEN 'ST_CLERK' THEN  1.15*salary
+                   WHEN 'SA_REP'   THEN  1.20*salary
+        ELSE       salary END AS "REVISED_SALARY"
+	FROM   hr.employees;
+
+
+2)  
+Modify the above code in such a way that salary hike will be provided based on the current 
+pay bracket 
+
+< 5000, then 20% hike 
+
+5000 to 10000 , then 12% hike 
+
+> 10000 then 6% hike 
+
+***
+SELECT last_name, job_id, salary,
+       CASE 	   WHEN salary<5000  THEN  1.20*salary
+                   WHEN salary>=5000 and salary<=10000 THEN  1.12*salary
+                   WHEN salary>10000 THEN  1.06*salary
+       END AS "REVISED_SALARY"
+	FROM   hr.employees;
+***
+
+
+SELECT last_name, job_id, salary,
+       CASE 	   WHEN salary<5000  THEN  1.20*salary
+                   WHEN salary>=5000 and salary<=10000 THEN  1.12*salary
+                   WHEN salary>10000 THEN  1.06*salary
+       ELSE salary END AS "REVISED_SALARY"
+	FROM   hr.employees;
+
+
+
+
+3) IN CLASS EXERCISE  
+
+Modify the above code to now deduct the tax based on the pay scale as per the below scale 
+
+Salary > 10000 , 30% tax 
+5000-10000 20% tax 
+under 5000, 10% tax 
+
+The output must have the following columns 
+
+first_name, phone number, job_id, current salary (including comission), salary after tax
+***
+SELECT first_name, phone_number, job_id, salary, 
+
+    	CASE		WHEN commission_pct is not null THEN salary + salary*commission_pct
+    				WHEN commission_pct is null THEN salary
+    
+    	ELSE salary END AS "salary_commission" ,
+
+    	CASE		WHEN salary > 10000 and commission_pct is not null THEN (salary + salary*commission_pct)*0.7
+					WHEN salary > 10000 and commission_pct is null THEN salary*0.7
+    
+    				WHEN salary >= 5000 and salary <= 10000 and commission_pct is not null THEN (salary + salary*commission_pct)*0.8
+					WHEN salary >= 5000 and salary <= 10000 and commission_pct is null THEN salary *0.8
+    
+    				WHEN salary < 5000 and commission_pct is not null THEN (salary + salary*commission_pct)*0.9
+					WHEN salary < 5000 and commission_pct is null THEN salary*0.9
+    
+		ELSE salary END AS "salary_tax"    
+	FROM   hr.employees; 
+
+----------------------------------------------------------------------------
+Understanding joins using 2 simple tables (customer table and sales table) 
+
+CREATE TABLE customers
+( customer_id number(10) NOT NULL PRIMARY KEY,
+  customer_name varchar2(50) NOT NULL
+);
+
+insert into customers(customer_id,customer_name) values(1,'Ram'); 
+insert into customers(customer_id,customer_name) values(2,'Bob'); 
+insert into customers(customer_id,customer_name) values(3,'Alice'); 
+insert into customers(customer_id,customer_name) values(4,'Sham'); 
+insert into customers(customer_id,customer_name) values(5,'Tim'); 
+insert into customers(customer_id,customer_name) values(6,'Tom'); 
+insert into customers(customer_id,customer_name) values(7,'Krish'); 
+
+
+CREATE TABLE sales
+( customer_id number(10) NOT NULL,
+  sales_id varchar(20) NOT NULL,
+  sale_amount float(4) NOT NULL,
+  constraint sales_pk PRIMARY KEY(customer_id, sales_id) 
+);
+
+insert into sales(customer_id,sales_id,sale_amount) values(1,'1xbyc',1000); 
+insert into sales(customer_id,sales_id,sale_amount) values(1,'3240yc',2000); 
+insert into sales(customer_id,sales_id,sale_amount) values(1,'sdf09xbyc',9086); 
+insert into sales(customer_id,sales_id,sale_amount) values(2,'1xbasyc',187); 
+insert into sales(customer_id,sales_id,sale_amount) values(2,'20394ll',1045.78); 
+insert into sales(customer_id,sales_id,sale_amount) values(3,'9asd',10000); 
+insert into sales(customer_id,sales_id,sale_amount) values(3,'345kk',1500); 
+insert into sales(customer_id,sales_id,sale_amount) values(1,'39045kkj',8000); 
+insert into sales(customer_id,sales_id,sale_amount) values(4,'asdkj88',5000); 
+insert into sales(customer_id,sales_id,sale_amount) values(5,'90234k',1000); 
+insert into sales(customer_id,sales_id,sale_amount) values(6,'234lkl',1040); 
+insert into sales(customer_id,sales_id,sale_amount) values(3,'kj29834',7000); 
+insert into sales(customer_id,sales_id,sale_amount) values(2,'aks88',9000); 
+insert into sales(customer_id,sales_id,sale_amount) values(1,'98asd',11000); 
+insert into sales(customer_id,sales_id,sale_amount) values(111,'98asdd',11000); 
+insert into sales(customer_id,sales_id,sale_amount) values(777,'110asd',12000); 
+insert into sales(customer_id,sales_id,sale_amount) values(888,'111asd',13000); 
+
+
+
+
+q)Lets try the most commonly used kind of join (the inner join) 
+
+SELECT c.customer_id, c.customer_name, s.sale_amount  
+FROM customers c INNER JOIN sales s
+ON c.customer_id = s.customer_id  ;
+
+Note : Only the matching customer_id from left table & right table will be selected in the 
+final output. Those customer_id's not found in right table for a corresponding entry in 
+left table will not be displayed in the output ! 
+
+
+q) Lets try the left join (also known as the left outer join in oracle) 
+
+SELECT c.customer_id, c.customer_name, s.sale_amount  
+FROM customers c LEFT JOIN sales s
+ON c.customer_id = s.customer_id  ;
+
+Business query : I want to know all the customers who have registered, made a purchase and 
+also those who have not made any purchase ! 
+
+
+
+
+q) Lets try the right join (is the same as the right outer join)
+
+SELECT c.customer_id, c.customer_name, s.sale_amount  
+FROM customers c RIGHT JOIN sales s
+ON c.customer_id = s.customer_id  ;
+
+
+q) Lets try the full join (same as full outer join) 
+
+SELECT c.customer_id, c.customer_name, s.sale_amount  
+FROM customers c FULL JOIN sales s
+ON c.customer_id = s.customer_id  ;
+
+----------------------------------------------------------------------------
+
+4) Understanding joins ..lets display the contents of the departments table 
+
+select * from hr.departments ;
+
+Now I want to know which employee works in which department by a default join operation 
+(inner join) The below is the brief overview of different kinds of joins 
+
+INNER JOIN: 
+Returns rows that match on common key values, compared from both tables
+
+LEFT JOIN: 
+Returns matched rows from both tables 
+And Unmatched rows from the left table
+
+
+RIGHT JOIN: 
+Returns matched rows from both tables 
+And Unmatched rows from the Right table
+
+
+SELECT employee_id, first_name, last_name, department_name, salary 
+FROM  hr.departments d INNER JOIN hr.employees e
+ON d.department_id = e.department_id order by  salary desc ;
+
+
+Now lets quickly see what different kinds of joins can look like
+
+SELECT employee_id, first_name, last_name, department_name, salary 
+FROM  hr.departments d LEFT OUTER JOIN hr.employees e
+ON d.department_id = e.department_id order by  salary desc ;
+
+SELECT employee_id, first_name, last_name, department_name, salary 
+FROM  hr.departments d RIGHT OUTER JOIN hr.employees e
+ON d.department_id = e.department_id order by  salary desc ;
+
+
+SELECT employee_id, first_name, last_name, department_name, salary 
+FROM  hr.departments d FULL OUTER JOIN hr.employees e
+ON d.department_id = e.department_id order by  salary desc ;
+
+Note : There is no difference between left join and left outer join , right join and right outer join, 
+full join and full outer join. 
+
+
+5) Now looking at the schema (jpeg image shared) I want to join 3 tables to find out 
+which city is an employee working in 
+
+SELECT employee_id, first_name, last_name, department_name, salary, city, country_id 
+FROM  hr.departments d INNER JOIN hr.employees e
+ON d.department_id = e.department_id  INNER JOIN hr.locations l
+ON d.location_id = l.location_id order by  salary desc ;
+
+
+6) IN CLASS EXERCISE
+Write a query to display the following columns and sort the result by descending 
+order of salary.
+
+employee_id, first_name, last_name , department name, salary, city, country name
+***
+SELECT employee_id, first_name, last_name, department_name, salary, city, country_name, c.country_id
+FROM  hr.departments d INNER JOIN hr.employees e
+ON d.department_id = e.department_id  INNER JOIN hr.locations l
+ON d.location_id = l.location_id  INNER JOIN hr.countries c 
+ON l.country_id = c.country_id
+order by salary desc ;
+***
+
+7) IN CLASS EXERCISE
+
+Your manager wants a report based on which country employees have been most loyal employees
+You just need to popoulate all the details in a table in an appropriate manner. 
+***
+SELECT country_name, avg((current_date-hire_date)/365) as experience_today
+FROM hr.employees e INNER JOIN hr.job_history j
+ON e.employee_id = j.employee_id
+INNER JOIN hr.departments d
+ON e.department_id = d.department_id
+INNER JOIN hr.locations l
+ON l.location_id = d.location_id
+INNER JOIN hr.countries c
+ON l.country_id = c.country_id
+group by country_name
+order by experience_today desc
+***
+
+create view <table_name> as <query>
+
+8) IN CLASS EXERCISE
+
+Write a query to find out the firtname, last name, department name, job_id , salary of all 
+the employees who either work in london
+***
+SELECT first_name, last_name, department_name, job_id, salary, city
+FROM hr.employees e INNER JOIN hr.departments d
+ON e.department_id = d.department_id
+INNER JOIN hr.locations l
+ON l.location_id = d.location_id
+INNER JOIN hr.countries c
+ON l.country_id = c.country_id
+WHERE city = 'London'
+***
+
+9) IN CLASS EXERCISE 
+
+Write a query to fetch the department id, department name, manager id and manager's first name
+
+SELECT *
+FROM hr.employees e FULL OUTER JOIN hr.departments d
+ON e.employee_id = d.manager_id
+order by employee_id
+
+10) IN CLASS EXERCISE 
+
+Using the result of the above query, write a query to populate the following data 
+
+Employee id, first name, last name, department name, his manager's name. 
+
+
+11) IN CLASS EXERCISE
+
+Write a query to display job title, employee name, and the difference between salary of 
+the employee and minimum salary for the job
+***
+SELECT first_name, last_name, job_title, salary, (salary - min_salary) as difference_between_min_salary
+FROM hr.employees e INNER JOIN hr.jobs j
+ON e.job_id = j.job_id
+order by difference_between_min_salary
+***
+12) IN CLASS EXERCISE 
+
+Using the result of the previous query. If the difference between the current salary and max 
+salary is greater than 30% of the current salary , then make a market correction by giving a 
+raise of 30 % from the current salary and populate the following columns 
+
+employee_id, first name, last name, department_name, years of experince, current salary, 
+max salary, difference in salary, incremented salary if applicable or same salary
+
+HINT: Might have to use case statement here ! 
+Note: Feel free to use views to reduce the complexity of queries ! 
+***
+SELECT e.employee_id, first_name, last_name, department_name, job_title,round((current_date-hire_date)/365) as Years_Experience, salary as current_salary, (max_salary - salary) as difference_between_max_salary,
+CASE WHEN salary*1.3 <= max_Salary THEN 1.3* salary
+     WHEN salary*1.3 > max_Salary THEN salary
+END as market_correction
+
+FROM hr.employees e INNER JOIN hr.jobs j
+ON e.job_id = j.job_id INNER JOIN hr.departments d
+ON d.department_id = e.department_id 
+order by difference_between_max_salary desc
+
