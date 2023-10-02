@@ -1,0 +1,23 @@
+1. Length and Width are strongly correlated with each other but why is there a weak correlation with both of those and Height?
+There is quite an extreme outlier in the height dataset and once that outlier is removed, we have a more normal distribution of results between the height and
+
+2. USB Ports are correlated with super weird things (length 0.98 / city_milage_km -0.95 /airbags 0.91
+
+The USB Ports just happened to conincidentally show strong correlations with some of the other fields. This is because of a lot data points overlapping due to the models of the cars being the same which causes high correlation since there is already a very small number of data points which is further compounded by the fact that the data points are already in the same place.
+
+3. Seating Capacity is only correlated with height while boot space capacity has a slight negative correltion
+
+Maybe we need to look at the percentage of the potential volume the car takes up?
+They do not have a correlation at all
+
+4. Fuel Tank capacity is correlated with lenght/width but inversely correlated with mileage?
+What gives us the most mileage?
+Engine Location seems to be important for detemining milage as well as the body type of the car.
+
+5. How does the wheel size affect the mileage of the car?
+
+6. What is minimum turning radius and what makes it big or small?
+
+
+
+
